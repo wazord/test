@@ -5,6 +5,7 @@ from scrapy.loader.processors import MapCompose, Join
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.loader import ItemLoader
+from twisted.python import unicode
 
 from properties.items import PropertiesItem
 
@@ -39,15 +40,15 @@ class ToMobileSpider(CrawlSpider):
 
         # Load fields using XPath expressions
         l.add_xpath('title', '//*[@itemprop="name"][1]/text()',
-                    MapCompose(str.strip, str.title))
+                    MapCompose(unicode.strip, unicode.title))
         l.add_xpath('price', './/*[@itemprop="price"][1]/text()',
                     MapCompose(lambda i: i.replace(',', ''), float),
                     re='[,.0-9]+')
         l.add_xpath('description', '//*[@itemprop="description"][1]/text()',
-                    MapCompose(str.strip), Join())
+                    MapCompose(unicode.strip), Join())
         l.add_xpath('address',
                     '//*[@itemtype="http://schema.org/Place"][1]/text()',
-                    MapCompose(str.strip))
+                    MapCompose(unicode.strip))
         l.add_xpath('image_urls', '//*[@itemprop="image"][1]/@src',
                     MapCompose(lambda i: response.urljoin(response.url, i)))
 
